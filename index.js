@@ -22,7 +22,10 @@ app.get('/', (req, res) => {
   var today  = new Date();
 
   app.get('/info', (req, res) => {
-    res.send(`<p>Phonebook as info for ${persons.length} people</p> <p>${today.toLocaleDateString("en-UK", options)}</p>`)
+      Person.find({}).then(persons => {
+          res.send(`<p>Phonebook as info for ${persons.length} people</p> <p>${today.toLocaleDateString("en-UK", options)}</p>`)
+
+      })
   })
 
 app.get('/api/persons', (req, res) => {
