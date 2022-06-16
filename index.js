@@ -14,31 +14,6 @@ app.use(morgan(':method :url :status :response-time ms - :res[content-length] :b
 
 app.use(express.json())
 
-
-let persons = [
-  {
-      id: 1,
-      name: "Hanna Hämäläinen",
-      number: '040 123 3412'
-  },
-  {
-    id: 2,
-    name: "Johannes Rantala",
-    number: '040 222 3312'
-},
-{
-    id: 3,
-    name: "Venla Väärälä",
-    number: '040 111 2212'
-},
-{
-    id: 4,
-    name: "Ismo Väärälä",
-    number: '040 123 5512'
-}
-]
-
-
 app.get('/', (req, res) => {
     res.send('<h1>Hello World!</h1>')
   })
@@ -56,17 +31,23 @@ app.get('/api/persons', (req, res) => {
       })
 })
 
-app.get('/api/persons/:id', (request, response) => {
+app.get('/api/persons/:id', (request, response, next) => {
     Person.findById(request.params.id).then(person => {
-      response.json(person)
-    })
+        if (person) {
+            response.json(person)
+          } else {
+            response.status(404).end()
+          }
+        })
+        .catch(error => next(error))
   })
 
   app.delete('/api/persons/:id', (request, response) => {
     const id = Number(request.params.id)
-    Person.findByIdAndDelete(request.params.id).then(person => response.status(204).end() )
-  
-    
+    Person.findByIdAndDelete(request.params.id).then(result => {
+        response.status(204).end()
+      })
+      .catch(error => next(error))  
   })
 
   
@@ -89,6 +70,21 @@ app.get('/api/persons/:id', (request, response) => {
     person.save().then(savedPerson => {
       response.json(savedPerson)
     })
+  })
+
+  app.put('/api/persons/:id', (request, response, next) => {
+    const body = request.body
+  
+    const person = {
+      name: body.name,
+      number: body.number,
+    }
+  
+    Person.findByIdAndUpdate(request.params.id, person, {new: true})
+      .then(updatedPerson => {
+        response.json(updatedPerson)
+      })
+      .catch(error => next(error))
   })
 
 
