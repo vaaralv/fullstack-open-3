@@ -24,23 +24,23 @@ const name = process.argv[2]
 const number = process.argv[3]
 
 if(name && number) {
-    const person = new Person({
-      name: name,
-      number: number
-    
-    })
-    
-    person.save().then(result => {
-      console.log(`Added ${name} number ${number} to phonebook`)
-      mongoose.connection.close()
-    })
+  const person = new Person({
+    name: name,
+    number: number
+
+  })
+
+  person.save().then(
+    console.log(`Added ${name} number ${number} to phonebook`),
+    mongoose.connection.close()
+  )
 
 } else {
-    Person.find({}).then(result => {
-        result.forEach(person => {
-          console.log(`${person.name} ${person.number}`)
-        })
-        mongoose.connection.close()
-      })
+  Person.find({}).then(result => {
+    result.forEach(person => {
+      console.log(`${person.name} ${person.number}`)
+    })
+    mongoose.connection.close()
+  })
 
 }
